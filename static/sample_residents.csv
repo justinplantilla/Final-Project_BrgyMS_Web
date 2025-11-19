@@ -1,0 +1,6 @@
+Resident ID,First Name,Last Name,Middle Initial,Age,Purok,Contact,Gender,Civil Status,Occupation
+RES001,John,Doe,,25,1,09123456789,Male,Single,Teacher
+RES002,Jane,Smith,,30,2,09876543210,Female,Married,Engineer
+RES003,Michael,Johnson,,45,3,09112233445,Male,Married,Doctor
+RES004,Sarah,Wilson,,28,1,09988776655,Female,Single,Nurse
+RES005,Robert,Brown,,52,2,09115566778,Male,Widowed,Farmer

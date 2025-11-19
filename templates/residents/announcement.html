@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Portal - Announcements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+         @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .activity-item {
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-400 to-purple-500 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white rounded-full p-2">
+    <img src="/static/images/logo.png" alt="Barangay Logo" class="w-8 h-8 rounded-full object-cover">
+</div>
+
+                <div>
+                    <h1 class="text-xl font-bold">Barangay Portal</h1>
+                    <p class="text-xs opacity-90">Silangan, Lazaan Nagcarlan Laguna</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                </button>
+                <button class="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white h-screen shadow-lg">
+            <nav class="p-4 space-y-2">
+                <a href="{{ url_for('dashboard') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="{{ url_for('certificates') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    <span class="font-medium">Certificates</span>
+                </a>
+                <a href="{{ url_for('complaints') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                    </svg>
+                    <span class="font-medium">Complaints/Blotter</span>
+                </a>
+                <a href="{{ url_for('announcement') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-purple-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                    </svg>
+                    <span class="font-medium">Announcements</span>
+                </a>
+                <a href="{{ url_for('settings') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                    <span class="font-medium">Settings</span>
+                </a>
+            </nav>
+            <div class="p-4">
+                <a href="{{ url_for('logout') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-red-600 hover:bg-red-50">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                    </svg>
+                    <span class="font-medium">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <!-- Weather Alert -->
+            <div class="bg-red-600 text-white rounded-lg p-4 mb-6 flex items-center justify-between shadow-lg animate-slide-down">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                    </svg>
+                    <span class="font-semibold">URGENT WEATHER ALERT!</span>
+                </div>
+                <button class="close-btn p-1 rounded hover:bg-white hover:bg-opacity-20 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Page Header -->
+            <div class="mb-6 animate-slide-in">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">News and Announcements</h1>
+                <p class="text-gray-600">Stay updated with the latest news from the barangay</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="bg-white rounded-lg shadow-sm mb-6">
+                <div class="flex border-b border-gray-200 overflow-x-auto">
+                    <button class="tab-item active px-6 py-4 whitespace-nowrap">
+                        All updates
+                    </button>
+                    <button class="tab-item px-6 py-4 text-gray-600 whitespace-nowrap">
+                        Community Updates
+                    </button>
+                    <button class="tab-item px-6 py-4 text-gray-600 whitespace-nowrap">
+                        Health Advisory
+                    </button>
+                    <button class="tab-item px-6 py-4 text-gray-600 whitespace-nowrap">
+                        Emergency Notices
+                    </button>
+                    <button class="tab-item px-6 py-4 text-gray-600 whitespace-nowrap">
+                        Events
+                    </button>
+                </div>
+            </div>
+
+            <!-- News Card -->
+            <div class="news-card bg-white rounded-xl shadow-md overflow-hidden animate-slide-in">
+                <!-- Image Placeholder -->
+                <div class="bg-gray-300 h-64 w-full"></div>
+                
+                <!-- Content -->
+                <div class="p-6">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Community Update</span>
+                        <span class="text-gray-500 text-sm">1 week ago</span>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Monthly Barangay Assembly - October 2025</h2>
+                    
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Join us for our monthly barangay assembly this Saturday at 9:00 AM. We'll discuss upcoming projects, budget allocations, and community concerns. Your participation matters!
+                    </p>
+                    
+                    <button class="text-blue-600 font-medium hover:text-blue-700 transition flex items-center space-x-1">
+                        <span>Read More</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-600 to-purple-500 text-white py-8 mt-12">
+  <div class="container mx-auto px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Logo + Barangay Info -->
+      <div class="flex items-start space-x-4">
+        <div class="flex items-center justify-center bg-white rounded-full w-14 h-14 shrink-0">
+          <img src="/static/images/logo.png" alt="Barangay Logo" class="w-10 h-10 rounded-full object-cover">
+        </div>
+        <div>
+          <h4 class="font-bold text-lg">Barangay Pulse</h4>
+          <p class="text-sm opacity-90">
+            This repository is a minimal and more developed community portal.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-bold mb-3">Quick Links</h4>
+        <ul class="space-y-2 text-sm opacity-90">
+          <li><a href="#" class="hover:underline">Services</a></li>
+          <li><a href="#" class="hover:underline">Certificates</a></li>
+          <li><a href="#" class="hover:underline">News</a></li>
+          <li><a href="#" class="hover:underline">Announcements</a></li>
+        </ul>
+      </div>
+
+      <!-- Office Hours -->
+      <div>
+        <h4 class="font-bold mb-3">Office Hours</h4>
+        <ul class="space-y-2 text-sm opacity-90">
+          <li>📍 Silangan Lazaan, Nagcarlan Laguna</li>
+          <li>⏰ Monday - Friday: 8:00 AM - 5:00 PM</li>
+          <li>⏰ Saturday: 8:00 AM - 1:00 PM</li>
+          <li>📧 brgy.silanganlazaan@yahoo.com.ph</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom small text -->
+    <div class="text-center text-sm opacity-70 mt-8 border-t border-white border-opacity-20 pt-4">
+      © 2025 Barangay Pulse. All rights reserved.
+    </div>
+  </div>
+</footer>
+</body>
+</html>

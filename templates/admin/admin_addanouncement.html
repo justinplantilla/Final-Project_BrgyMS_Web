@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Announcement - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/add_announcement.css" />
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+      <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+        <i data-feather="layout" class="icon"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+        <i data-feather="users" class="icon"></i>
+        <span>Resident Management</span>
+      </a>
+      <a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+        <i data-feather="user-check" class="icon"></i>
+        <span>Barangay Officials</span>
+      </a>
+      <a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+        <i data-feather="file-text" class="icon"></i>
+        <span>Certificates</span>
+      </a>
+      <a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+        <i data-feather="alert-circle" class="icon"></i>
+        <span>Complaints/Blotter</span>
+      </a>
+      <a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item active">
+        <i data-feather="volume-2" class="icon"></i>
+        <span>Announcements</span>
+      </a>
+      <a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+        <i data-feather="settings" class="icon"></i>
+        <span>Settings</span>
+      </a>
+      <a href="{{ url_for('logout') }}" class="nav-item">
+        <i data-feather="log-out" class="icon"></i>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <div class="mb-8">
+      <h1 class="text-2xl font-semibold">Add Announcement</h1>
+      <p class="text-sm text-gray-500">Create a new announcement for residents</p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 max-w-3xl">
+      <h2 class="text-lg font-semibold text-gray-800 mb-1">Announcement Details</h2>
+      <p class="text-sm text-gray-500 mb-6">Fill in the information below to create a new announcement</p>
+
+      <!-- FORM -->
+      <form action="{{ url_for('admin_bp.adminaddannouncement') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Title -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Announcement Title <span class="text-red-500">*</span></label>
+          <input type="text" name="title" placeholder="Enter announcement title"
+                 class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" required>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+          <textarea name="description" rows="5" placeholder="Enter detailed description..."
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" required></textarea>
+        </div>
+
+        <!-- Image Upload -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Image Upload (Optional)</label>
+          <input type="file" name="image" accept="image/*" class="w-full text-sm text-gray-600">
+          <p class="text-xs text-gray-500 mt-1">PNG, JPG, or GIF up to 10MB</p>
+        </div>
+
+        <!-- Priority Level -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Priority Level</label>
+          <select name="priority" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+            <option>Normal</option>
+            <option>Important</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 pt-4">
+          <a href="{{ url_for('admin_bp.adminannouncement') }}"
+             class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-md transition">Cancel</a>
+          <button type="submit"
+                  class="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-md transition">
+            Publish Announcement
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>feather.replace();</script>
+</body>
+</html>

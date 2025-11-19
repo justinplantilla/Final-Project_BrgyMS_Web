@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% if edit %}Edit{% else %}Add{% endif %} Official - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/add_official.css" />
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+      <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+        <i data-feather="layout" class="icon"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+        <i data-feather="users" class="icon"></i>
+        <span>Resident Management</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item active">
+        <i data-feather="user-check" class="icon"></i>
+        <span>Barangay Officials</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+        <i data-feather="file-text" class="icon"></i>
+        <span>Certificates</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+        <i data-feather="alert-circle" class="icon"></i>
+        <span>Complaints/Blotter</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+        <i data-feather="volume-2" class="icon"></i>
+        <span>Announcements</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+        <i data-feather="settings" class="icon"></i>
+        <span>Settings</span>
+      </a>
+
+      <a href="{{ url_for('logout') }}" class="nav-item">
+        <i data-feather="log-out" class="icon"></i>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold">{% if edit %}Edit{% else %}Add{% endif %} Official</h1>
+      <div class="flex items-center text-sm text-gray-500 mt-1">
+        <a href="{{ url_for('admin_bp.adminofficials') }}" class="text-indigo-600 hover:underline">Officials</a>
+        <span class="mx-2">›</span>
+        <span>{% if edit %}Edit{% else %}Add{% endif %} Official</span>
+      </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-white 
+                        {% if category == 'success' %} bg-green-500 
+                        {% elif category == 'danger' %} bg-red-500 
+                        {% else %} bg-blue-500 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form Section -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 w-full max-w-3xl">
+      <h2 class="text-lg font-semibold text-gray-800 mb-1">{% if edit %}Edit{% else %}Add New{% endif %} Official</h2>
+      <p class="text-sm text-gray-500 mb-5">{% if edit %}Update{% else %}Fill in{% endif %} the information below to {% if edit %}update{% else %}add a new{% endif %} barangay official to the system.</p>
+
+      <!-- FORM -->
+      <form action="{% if edit %}{{ url_for('admin_bp.edit_official', official_id=official.id) }}{% else %}{{ url_for('admin_bp.add_official') }}{% endif %}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Full Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="full_name"
+            value="{% if edit %}{{ official.full_name }}{% endif %}"
+            placeholder="Enter full name"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            required
+          />
+        </div>
+
+        <!-- Position -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Position <span class="text-red-500">*</span>
+          </label>
+          <select
+            name="position"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            required
+          >
+            <option value="">Select position</option>
+            <option value="Barangay Captain" {% if edit and official.position == 'Barangay Captain' %}selected{% endif %}>Barangay Captain</option>
+            <option value="Barangay Secretary" {% if edit and official.position == 'Barangay Secretary' %}selected{% endif %}>Barangay Secretary</option>
+            <option value="Barangay Treasurer" {% if edit and official.position == 'Barangay Treasurer' %}selected{% endif %}>Barangay Treasurer</option>
+            <option value="Barangay Councilor" {% if edit and official.position == 'Barangay Councilor' %}selected{% endif %}>Barangay Councilor</option>
+            <option value="SK Chairman" {% if edit and official.position == 'SK Chairman' %}selected{% endif %}>SK Chairman</option>
+          </select>
+        </div>
+
+        <!-- Contact Number -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Contact Number <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="contact_number"
+            value="{% if edit %}{{ official.contact_number }}{% endif %}"
+            placeholder="Enter contact number"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            required
+          />
+        </div>
+
+        <!-- Term Start and End -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Term Start <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="term_start"
+              value="{% if edit %}{{ official.term_start }}{% endif %}"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Term End <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="term_end"
+              value="{% if edit %}{{ official.term_end }}{% endif %}"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Upload Photo -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Official Photo <span class="text-gray-400">(Optional)</span>
+          </label>
+          <input 
+            type="file" 
+            name="photo" 
+            accept="image/*" 
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none bg-white"
+          />
+          <p class="text-xs text-gray-500 mt-1">Accepted formats: JPG, PNG, JPEG. Max size: 2MB.</p>
+          {% if edit and official.photo_url %}
+          <p class="text-xs text-gray-500 mt-1">Current photo will be replaced if you upload a new one.</p>
+          <img src="{{ official.photo_url }}" alt="Current photo" class="w-16 h-16 rounded-full object-cover mt-2">
+          {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 pt-4">
+          <a 
+            href="{{ url_for('admin_bp.adminofficials') }}" 
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+          >
+            ✕ Cancel
+          </a>
+          <button
+            type="submit"
+            class="px-5 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:scale-105 transition flex items-center gap-2"
+          >
+            <i data-feather="{% if edit %}edit{% else %}plus{% endif %}" class="w-4 h-4"></i> {% if edit %}Update{% else %}Add{% endif %} Official
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>feather.replace();</script>
+</body>
+</html>

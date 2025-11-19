@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complaints / Blotter - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/admin_complains.css" />
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+   <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+  <i data-feather="layout" class="icon"></i>
+  <span>Dashboard</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+  <i data-feather="users" class="icon"></i>
+  <span>Resident Management</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Barangay Officials</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Certificates</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item active">
+  <i data-feather="alert-circle" class="icon"></i>
+  <span>Complaints/Blotter</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+  <i data-feather="volume-2" class="icon"></i>
+  <span>Announcements</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+  <i data-feather="settings" class="icon"></i>
+  <span>Settings</span>
+</a>
+
+<a href="{{ url_for('logout') }}" class="nav-item">
+  <i data-feather="log-out" class="icon"></i>
+  <span>Logout</span>
+</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Complaints / Blotter</h1>
+        <p class="text-gray-600 text-sm">Manage and track community complaints and incidents</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-1 transition">
+          <i data-feather="plus" class="w-4 h-4"></i> Complaint
+        </button>
+        <div class="relative">
+          <i data-feather="bell" class="w-5 h-5 text-gray-600"></i>
+          <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+      <div class="flex gap-3">
+        <select class="form-input w-40">
+          <option>All Status</option>
+          <option>Pending</option>
+          <option>In Progress</option>
+          <option>Resolved</option>
+        </select>
+
+        <select class="form-input w-44">
+          <option>All Categories</option>
+          <option>Noise Complaint</option>
+          <option>Property Dispute</option>
+          <option>Public Safety</option>
+        </select>
+      </div>
+
+      <div class="relative w-64">
+        <i data-feather="search" class="absolute left-3 top-3 text-gray-400 w-4 h-4"></i>
+        <input type="text" placeholder="Search complaints..." class="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-gray-100 text-gray-600 text-xs uppercase">
+          <tr>
+            <th class="px-4 py-3">Complaint ID</th>
+            <th class="px-4 py-3">Complainant</th>
+            <th class="px-4 py-3">Incident Type</th>
+            <th class="px-4 py-3">Location</th>
+            <th class="px-4 py-3">Incident Date</th>
+            <th class="px-4 py-3">Date Filed</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if complaints %}
+            {% for complaint in complaints %}
+              <tr class="hover:bg-gray-50 border-b">
+                <td class="px-4 py-3 text-indigo-600 font-medium">#BLT-{{ complaint.id }}</td>
+                <td class="px-4 py-3 flex items-center gap-2">
+                  <div class="w-8 h-8 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center">
+                    <i data-feather="user" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-800">{{ complaint.user.full_name }}</p>
+                    <p class="text-xs text-gray-500">{{ complaint.user.email }}</p>
+                  </div>
+                </td>
+                <td class="px-4 py-3">{{ complaint.incident_type }}</td>
+                <td class="px-4 py-3">{{ complaint.location }}</td>
+                <td class="px-4 py-3">{{ complaint.incident_date }}</td>
+                <td class="px-4 py-3">{{ complaint.created_at.date() }}</td>
+                <td class="px-4 py-3">
+                  <span class="status-badge {% if complaint.status == 'pending' %}bg-yellow-100 text-yellow-700{% elif complaint.status == 'resolved' %}bg-green-100 text-green-700{% elif complaint.status == 'dismissed' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ complaint.status.title() }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  {% if complaint.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('admin_bp.update_complaint_status', complaint_id=complaint.id) }}" style="display: inline;">
+                      <input type="hidden" name="action" value="in_progress">
+                      <button type="submit" class="action-btn text-blue-600" title="Start Investigation" onclick="return confirm('Are you sure you want to start investigation for this complaint?')"><i data-feather="play" class="w-4 h-4"></i></button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_bp.update_complaint_status', complaint_id=complaint.id) }}" style="display: inline;">
+                      <input type="hidden" name="action" value="dismissed">
+                      <button type="submit" class="action-btn text-red-600" title="Dismiss" onclick="return confirm('Are you sure you want to dismiss this complaint?')"><i data-feather="x" class="w-4 h-4"></i></button>
+                    </form>
+                  {% elif complaint.status == 'under investigation' %}
+                    <form method="POST" action="{{ url_for('admin_bp.update_complaint_status', complaint_id=complaint.id) }}" style="display: inline;">
+                      <input type="hidden" name="action" value="resolved">
+                      <button type="submit" class="action-btn text-green-600" title="Resolve" onclick="return confirm('Are you sure you want to resolve this complaint?')"><i data-feather="check" class="w-4 h-4"></i></button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_bp.update_complaint_status', complaint_id=complaint.id) }}" style="display: inline;">
+                      <input type="hidden" name="action" value="dismissed">
+                      <button type="submit" class="action-btn text-red-600" title="Dismiss" onclick="return confirm('Are you sure you want to dismiss this complaint?')"><i data-feather="x" class="w-4 h-4"></i></button>
+                    </form>
+                  {% endif %}
+                  <button onclick="viewDetails({{ complaint.id }})" class="action-btn text-indigo-600" title="View Details"><i data-feather="eye" class="w-4 h-4"></i></button>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                No complaints found.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center text-sm text-gray-500 mt-4">
+      <p>Showing 1 to 4 of 24 complaints</p>
+      <div class="flex items-center gap-1">
+        <button class="pagination-btn">&lt;</button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <button class="pagination-btn">&gt;</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal for Complaint Details -->
+  <div id="complaintModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Complaint Details</h3>
+          <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-feather="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div id="modalContent" class="text-sm text-gray-700">
+          <!-- Content will be loaded here -->
+        </div>
+        <div class="flex justify-end mt-4 space-x-2" id="modalActions">
+          <!-- Action buttons will be added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function viewDetails(complaintId) {
+      fetch('/admin/complaint/' + complaintId + '/details')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const complaint = data.data;
+          const modalContent = document.getElementById('modalContent');
+          const modalActions = document.getElementById('modalActions');
+
+          // Safely determine status class
+          let statusClass = 'bg-gray-100 text-gray-700';
+          if (complaint.status === 'pending') {
+            statusClass = 'bg-yellow-100 text-yellow-700';
+          } else if (complaint.status === 'resolved') {
+            statusClass = 'bg-green-100 text-green-700';
+          } else if (complaint.status === 'dismissed') {
+            statusClass = 'bg-red-100 text-red-700';
+          } else if (complaint.status === 'in progress') {
+            statusClass = 'bg-blue-100 text-blue-700';
+          }
+
+          // Safely format status text
+          const statusValue = complaint.status || 'Unknown';
+          const statusText = statusValue.charAt(0).toUpperCase() + statusValue.slice(1);
+
+          let evidenceHtml = '';
+          if (complaint.evidence_url) {
+            evidenceHtml = '<div class="col-span-2 mt-4"><strong>Evidence:</strong><div class="mt-2"><img src="' + complaint.evidence_url + '" alt="Evidence" class="max-w-full h-auto rounded-lg border border-gray-300" style="max-height: 300px;"></div></div>';
+          }
+
+          modalContent.innerHTML =
+            '<div class="grid grid-cols-2 gap-4">' +
+              '<div><strong>Complainant Name:</strong> ' + (complaint.complainant_name || 'N/A') + '</div>' +
+              '<div><strong>Complainant Email:</strong> ' + (complaint.complainant_email || 'N/A') + '</div>' +
+              '<div><strong>Incident Type:</strong> ' + (complaint.incident_type || 'N/A') + '</div>' +
+              '<div><strong>Incident Date:</strong> ' + (complaint.incident_date || 'N/A') + '</div>' +
+              '<div><strong>Location:</strong> ' + (complaint.location || 'N/A') + '</div>' +
+              '<div class="col-span-2"><strong>Description:</strong> ' + (complaint.description || 'N/A') + '</div>' +
+              '<div class="col-span-2"><strong>Persons Involved:</strong> ' + (complaint.persons_involved || 'N/A') + '</div>' +
+              '<div><strong>Status:</strong> <span class="status-badge ' + statusClass + '">' + statusText + '</span></div>' +
+              '<div><strong>Date Filed:</strong> ' + new Date(complaint.created_at).toLocaleDateString() + '</div>' +
+              evidenceHtml +
+            '</div>';
+
+          modalActions.innerHTML = '';
+          if (complaint.status === 'pending') {
+            modalActions.innerHTML =
+              '<form method="POST" action="/admin/complaint/' + complaint.id + '/status" style="display: inline;">' +
+                '<input type="hidden" name="action" value="in_progress">' +
+                '<button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="return confirm(\'Are you sure you want to start investigation for this complaint?\')">Start Investigation</button>' +
+              '</form>' +
+              '<form method="POST" action="/admin/complaint/' + complaint.id + '/status" style="display: inline;">' +
+                '<input type="hidden" name="action" value="dismissed">' +
+                '<button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm(\'Are you sure you want to dismiss this complaint?\')">Dismiss</button>' +
+              '</form>' +
+              '<button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>';
+          } else if (complaint.status === 'under investigation') {
+            modalActions.innerHTML =
+              '<form method="POST" action="/admin/complaint/' + complaint.id + '/status" style="display: inline;">' +
+                '<input type="hidden" name="action" value="resolved">' +
+                '<button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" onclick="return confirm(\'Are you sure you want to resolve this complaint?\')">Resolve</button>' +
+              '</form>' +
+              '<form method="POST" action="/admin/complaint/' + complaint.id + '/status" style="display: inline;">' +
+                '<input type="hidden" name="action" value="dismissed">' +
+                '<button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm(\'Are you sure you want to dismiss this complaint?\')">Dismiss</button>' +
+              '</form>' +
+              '<button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>';
+          } else {
+            modalActions.innerHTML = '<button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>';
+          }
+
+          document.getElementById('complaintModal').classList.remove('hidden');
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while fetching complaint details.');
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('complaintModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('complaintModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
+
+  <script>feather.replace();</script>
+</body>
+</html>

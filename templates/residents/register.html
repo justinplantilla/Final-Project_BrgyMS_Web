@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Barangay Portal</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/registration.css">
+
+</head>
+<body>
+    <div class="login-page">
+        <div class="logo-side">
+            <div class="logo-container">
+                <div class="register-logo-circle">
+                    <img src="/static/images/logo.png" alt="Barangay Logo" class="main-logo">
+                    <h1 class="logo-title">Barangay Pulse</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-side">
+            <div class="form-container">
+                <div class="form-header">
+                    <div class="icon-circle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                    </div>
+                    <h2>Create an Account</h2>
+                    <p class="subtitle">Please enter your details</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('register') }}" method="POST" id="registerForm">
+                    <div class="input-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" placeholder="Enter your last name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        <button type="button" id="sendCodeBtn" class="btn-verify">Send Verification Code</button>
+                    </div>
+
+                    <div class="input-group" id="verificationGroup">
+                        <label for="verification_code">Verification Code</label>
+                        <input type="text" id="verification_code" placeholder="Enter 6-digit code" maxlength="6" class="code-input" disabled>
+                        <button type="button" id="verifyCodeBtn" class="btn-verify" disabled>Verify Code</button>
+                        <p id="verificationMessage" style="font-size: 0.9rem; margin-top: 5px;"></p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirm_password">Repeat Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    </div>
+
+                    <div class="form-footer" style="margin-bottom: 1rem;">
+                        <label class="remember-me">
+                            <input type="checkbox" required>
+                            <span>I accept the Terms & Conditions</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Register</button>
+
+                    <div class="register-prompt">
+                        <a href="{{ url_for('login') }}">Already have an account?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        let emailVerified = false;
+
+
+
+        // Password validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Hindi tugma ang mga password!');
+                return;
+            }
+
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                return;
+            }
+
+            if (!emailVerified) {
+                e.preventDefault();
+                alert('Please verify your email before registering!');
+                return;
+            }
+        });
+
+        // Send verification code
+        document.getElementById('sendCodeBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const btn = document.getElementById('sendCodeBtn');
+
+            if (!email) {
+                alert("Please enter an email first!");
+                return;
+            }
+
+            if (!username) {
+                alert("Please enter a username!");
+                return;
+            }
+
+            if (!password) {
+                alert("Please enter a password!");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters long!");
+                return;
+            }
+
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('/send-verification-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Enable verification input group
+                    document.getElementById('verification_code').disabled = false;
+                    document.getElementById('verifyCodeBtn').disabled = false;
+                    document.getElementById('verificationMessage').textContent = "";
+                    emailVerified = false;
+                    btn.textContent = 'Code Sent';
+                    btn.disabled = true;
+                    // Disable email input to prevent changes
+                    document.getElementById('email').disabled = true;
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert("Error sending verification code.");
+                console.error('Error:', error);
+            } finally {
+                if (!result.success) {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Verification Code';
+                }
+            }
+        });
+
+        // Verify code
+        document.getElementById('verifyCodeBtn').addEventListener('click', async () => {
+            const code = document.getElementById('verification_code').value;
+            const btn = document.getElementById('verifyCodeBtn');
+            const verifyMsg = document.getElementById('verificationMessage');
+
+            if (!code) {
+                alert("Please enter the verification code!");
+                return;
+            }
+
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+
+            try {
+                const response = await fetch('/verify-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    verifyMsg.textContent = "✅ Email verified successfully!";
+                    verifyMsg.style.color = "green";
+                    emailVerified = true;
+                    // Hide verification group and update send button
+                    document.getElementById('verificationGroup').style.display = 'none';
+                    document.getElementById('sendCodeBtn').textContent = 'Email Verified';
+                    document.getElementById('sendCodeBtn').disabled = true;
+                    document.getElementById('sendCodeBtn').style.backgroundColor = '#28a745';
+                } else {
+                    verifyMsg.textContent = result.message;
+                    verifyMsg.style.color = "red";
+                    emailVerified = false;
+                }
+            } catch (error) {
+                verifyMsg.textContent = "Error verifying code.";
+                verifyMsg.style.color = "red";
+                console.error('Error:', error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Verify Code';
+            }
+        });
+    </script>
+</body>
+</html>

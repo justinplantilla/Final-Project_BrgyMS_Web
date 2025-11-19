@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barangay Officials - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/official.css" />
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+      
+    <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+  <i data-feather="layout" class="icon"></i>
+  <span>Dashboard</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+  <i data-feather="users" class="icon"></i>
+  <span>Resident Management</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item active">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Barangay Officials</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Certificates</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+  <i data-feather="alert-circle" class="icon"></i>
+  <span>Complaints/Blotter</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+  <i data-feather="volume-2" class="icon"></i>
+  <span>Announcements</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+  <i data-feather="settings" class="icon"></i>
+  <span>Settings</span>
+</a>
+
+<a href="{{ url_for('logout') }}" class="nav-item">
+  <i data-feather="log-out" class="icon"></i>
+  <span>Logout</span>
+</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Barangay Officials</h1>
+        <p class="text-gray-600 text-sm">Manage barangay officials and their information</p>
+      </div>
+      <a href="{{ url_for('admin_bp.add_official') }}"
+   class="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-1 transition">
+  <i data-feather="plus" class="w-4 h-4"></i>Add Official</a>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-6 relative">
+      <i data-feather="search" class="absolute left-3 top-3 text-gray-400 w-4 h-4"></i>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search officials..."
+        class="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      />
+    </div>
+
+    <!-- Officials Grid -->
+    <div id="officialsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      {% for official in officials %}
+      <!-- Official Card -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-3">
+          {% if official.photo_url %}
+          <img src="{{ official.photo_url }}" alt="{{ official.full_name }}" class="w-12 h-12 rounded-full object-cover">
+          {% else %}
+          <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center">
+            <i data-feather="user" class="w-5 h-5"></i>
+          </div>
+          {% endif %}
+          <div>
+            <h2 class="font-semibold text-gray-800">{{ official.full_name }}</h2>
+            <p class="text-indigo-600 text-sm">{{ official.position }}</p>
+            {% if official.term_start %}
+            <p class="text-gray-500 text-xs">Since {{ official.term_start }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="text-gray-600 text-sm space-y-1 mb-3">
+          {% if official.contact_number %}
+          <p><i data-feather="phone" class="inline w-4 h-4 mr-1 text-gray-400"></i> {{ official.contact_number }}</p>
+          {% endif %}
+          <p><i data-feather="mail" class="inline w-4 h-4 mr-1 text-gray-400"></i> {{ official.full_name.lower().replace(' ', '.') }}@barangay.gov</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <a href="{{ url_for('admin_bp.edit_official', official_id=official.id) }}" class="edit-btn text-blue-600 hover:text-blue-800 text-sm"><i data-feather="edit-2" class="w-4 h-4"></i> Edit</a>
+          <form method="POST" action="{{ url_for('admin_bp.delete_official', official_id=official.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this official?')">
+            <button type="submit" class="delete-btn text-red-600 hover:text-red-800 text-sm"><i data-feather="trash-2" class="w-4 h-4"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </main>
+
+  <script>
+    feather.replace();
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const officialsGrid = document.getElementById('officialsGrid');
+      const officialCards = officialsGrid.querySelectorAll('.bg-white');
+
+      officialCards.forEach(card => {
+        const name = card.querySelector('h2').textContent.toLowerCase();
+        const position = card.querySelector('.text-indigo-600').textContent.toLowerCase();
+        const contact = card.querySelector('p') ? card.querySelector('p').textContent.toLowerCase() : '';
+
+        if (name.includes(searchTerm) || position.includes(searchTerm) || contact.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

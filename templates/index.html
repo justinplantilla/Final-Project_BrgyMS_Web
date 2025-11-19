@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barangay Pulse - Home</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="/static/images/logo.png" alt="Barangay Pulse Logo" />
+        <span>Barangay Pulse</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="hero-section" id="home">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        WELCOME TO<br />
+        <span class="brand-name">BARANGAY PULSE</span>
+      </h1>
+
+      <div class="tagline">
+        <p>Mas Madali.</p>
+        <p>Mas Mabilis.</p>
+        <p>Mas Maayos</p>
+        <p>na Serbisyo</p>
+        <p>para sa inyo.</p>
+      </div>
+
+      <p class="description">
+        Barangay Pulse — The heartbeat of a smarter and more connected community.
+        Sama-sama nating pinapaganda ang serbisyo publiko at pakikilahok ng mamamayan
+        para sa isang mas maunlad, maayos, at responsableng komunidad.
+      </p>
+
+      <div class="cta-buttons">
+        <button class="btn btn-primary" onclick="goToLogin()">Get Started</button>
+        <button class="btn btn-secondary" onclick="scrollToLearnMore()">Learn More</button>
+      </div>
+    </div>
+  </main>
+
+  <section id="about">
+    <h2>About Barangay Pulse</h2>
+    <p>
+      Barangay Pulse ay isang digital platform na layuning gawing mas mabilis at mas episyente
+      ang komunikasyon sa pagitan ng barangay at mamamayan. Dito, mas madali nang makakuha ng impormasyon,
+      mag-report ng isyu, at makilahok sa mga proyekto ng komunidad.
+    </p>
+  </section>
+
+  <section id="services">
+  <h2>Our Services</h2>
+  <div class="services-container">
+    <div class="service-box">
+      <div class="icon">📄</div>
+      <h3>Barangay Certificates & Permits</h3>
+      <p>Mag-request ng barangay clearance, business permit, o residency certificate nang mabilis at madali.</p>
+    </div>
+
+    <div class="service-box">
+      <div class="icon">🧾</div>
+      <h3>Complaints & Blotter Reports</h3>
+      <p>Maghain ng reklamo o blotter report online. Maging bahagi ng mas ligtas at maayos na komunidad.</p>
+    </div>
+
+    <div class="service-box">
+      <div class="icon">📢</div>
+      <h3>Announcements</h3>
+      <p>Maging updated sa mga proyekto, aktibidad, at mahahalagang paalala mula sa inyong barangay.</p>
+    </div>
+  </div>
+</section>
+
+
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>📍 Address: Barangay Hall, YourTown, Philippines</p>
+    <p>📞 Phone: (02) 123-4567</p>
+    <p>✉️ Email: contact@barangaypulse.ph</p>
+  </section>
+
+  <script>
+    function goToLogin() {
+      window.location.href = "/login";
+    }
+
+    function scrollToLearnMore() {
+      document.getElementById("about").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Fade-in animation on scroll
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll("section").forEach((sec) => {
+      sec.classList.add("fade-in");
+      observer.observe(sec);
+    });
+
+    // Navbar active highlight
+    const navLinks = document.querySelectorAll(".nav-links a");
+    const sections = document.querySelectorAll("main, section");
+
+    window.addEventListener("scroll", () => {
+      let current = "";
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop - 200;
+        if (scrollY >= sectionTop) current = section.getAttribute("id");
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${current}`) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

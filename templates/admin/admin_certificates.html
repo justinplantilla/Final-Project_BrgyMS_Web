@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificates - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/admin_certificates.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.tailwindcss.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.tailwindcss.min.js"></script>
+</head>
+
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+
+    <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+  <i data-feather="layout" class="icon"></i>
+  <span>Dashboard</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+  <i data-feather="users" class="icon"></i>
+  <span>Resident Management</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Barangay Officials</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item active">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Certificates</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+  <i data-feather="alert-circle" class="icon"></i>
+  <span>Complaints/Blotter</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+  <i data-feather="volume-2" class="icon"></i>
+  <span>Announcements</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+  <i data-feather="settings" class="icon"></i>
+  <span>Settings</span>
+</a>
+
+<a href="{{ url_for('logout') }}" class="nav-item">
+  <i data-feather="log-out" class="icon"></i>
+  <span>Logout</span>
+</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Certificates</h1>
+        <p class="text-sm text-gray-500">Manage certificate requests and approvals</p>
+      </div>
+      <div class="relative">
+        <input type="text" placeholder="Search certificate requests..."
+               class="border border-gray-300 rounded-md pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none w-64">
+        <i data-feather="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"></i>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <table id="certificatesTable" class="min-w-full text-sm text-gray-700">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-3 text-left font-medium">Requester</th>
+            <th class="px-6 py-3 text-left font-medium">Certificate Type</th>
+            <th class="px-6 py-3 text-left font-medium">Purpose</th>
+            <th class="px-6 py-3 text-left font-medium">Date Requested</th>
+            <th class="px-6 py-3 text-left font-medium">Status</th>
+            <th class="px-6 py-3 text-center font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data will be loaded via AJAX -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal for Certificate Details -->
+  <div id="certificateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900" id="modalTitle">Certificate Details</h3>
+          <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-feather="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div id="modalContent" class="text-sm text-gray-700">
+          <!-- Content will be loaded here -->
+        </div>
+        <div class="flex justify-end mt-4 space-x-2" id="modalActions">
+          <!-- Action buttons will be added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let certificatesTable;
+
+    $(document).ready(function() {
+      // Initialize DataTable
+      certificatesTable = $('#certificatesTable').DataTable({
+        ajax: {
+          url: '{{ url_for("admin_bp.admin_certificates_data") }}',
+          type: 'GET'
+        },
+        columns: [
+          {
+            data: 'full_name',
+            render: function(data, type, row) {
+              return `
+                <div class="flex items-center gap-3">
+                  <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-8 h-8 rounded-full">
+                  <div>
+                    <p class="font-medium text-gray-800">${data}</p>
+                  </div>
+                </div>
+              `;
+            }
+          },
+          { data: 'certificate_type' },
+          { data: 'purpose' },
+          {
+            data: 'created_at',
+            render: function(data) {
+              return new Date(data).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              });
+            }
+          },
+          {
+            data: 'status',
+            render: function(data) {
+              let badgeClass = '';
+              let icon = '';
+              switch(data) {
+                case 'pending':
+                  badgeClass = 'bg-yellow-100 text-yellow-700';
+                  break;
+                case 'processing':
+                  badgeClass = 'bg-blue-100 text-blue-700';
+                  break;
+                case 'ready for pickup':
+                  badgeClass = 'bg-green-100 text-green-700';
+                  icon = '<i data-feather="package" class="inline w-4 h-4 mr-1"></i>';
+                  break;
+                case 'declined':
+                  badgeClass = 'bg-red-100 text-red-700';
+                  break;
+                default:
+                  badgeClass = 'bg-gray-100 text-gray-700';
+              }
+              return `<span class="status-badge ${badgeClass} inline-flex items-center">${icon}${data.charAt(0).toUpperCase() + data.slice(1)}</span>`;
+            }
+          },
+          {
+            data: null,
+            orderable: false,
+            render: function(data, type, row) {
+              let actions = '';
+              if (row.status === 'pending') {
+                actions += `<button onclick="updateStatus(${row.id}, 'approved')" class="text-green-500 hover:text-green-700 mr-2" title="Approve"><i data-feather="check"></i></button>`;
+                actions += `<button onclick="updateStatus(${row.id}, 'declined')" class="text-red-500 hover:text-red-700 mr-2" title="Decline"><i data-feather="x"></i></button>`;
+              } else if (row.status === 'processing') {
+                actions += `<button onclick="markReady(${row.id})" class="text-blue-500 hover:text-blue-700 mr-2" title="Mark as Ready for Pickup"><i data-feather="package"></i></button>`;
+              }
+              actions += `<button onclick="viewDetails(${row.id})" class="text-indigo-500 hover:text-indigo-700" title="View Details"><i data-feather="eye"></i></button>`;
+              return `<div class="text-center">${actions}</div>`;
+            }
+          }
+        ],
+        pageLength: 10,
+        responsive: true,
+        language: {
+          emptyTable: "No certificate requests found"
+        },
+        drawCallback: function() {
+          // Replace feather icons after table is drawn
+          feather.replace();
+        }
+      });
+    });
+
+    function updateStatus(certId, action) {
+      if (!confirm(`Are you sure you want to ${action} this certificate request?`)) {
+        return;
+      }
+
+      fetch(`/admin/certificate/${certId}/status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: action })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          certificatesTable.ajax.reload();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the status.');
+      });
+    }
+
+    function markReady(certId) {
+      if (!confirm('Are you sure you want to mark this certificate as ready for pickup?')) {
+        return;
+      }
+
+      fetch(`/admin/certificate/${certId}/ready`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          certificatesTable.ajax.reload();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while marking certificate as ready.');
+      });
+    }
+
+    function viewDetails(certId) {
+      fetch(`/admin/certificate/${certId}/details`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const cert = data.data;
+          const modalContent = document.getElementById('modalContent');
+          const modalActions = document.getElementById('modalActions');
+
+          modalContent.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+              <div><strong>Full Name:</strong> ${cert.full_name}</div>
+              <div><strong>Contact Number:</strong> ${cert.contact_number}</div>
+              <div><strong>Certificate Type:</strong> ${cert.certificate_type}</div>
+              <div><strong>Purpose:</strong> ${cert.purpose}</div>
+              <div><strong>Status:</strong> <span class="status-badge ${cert.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : cert.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${cert.status.charAt(0).toUpperCase() + cert.status.slice(1)}</span></div>
+              <div><strong>Date Requested:</strong> ${new Date(cert.created_at).toLocaleDateString()}</div>
+            </div>
+            ${cert.valid_id_file_url ? `<div class="mt-4"><strong>Valid ID:</strong> <a href="${cert.valid_id_file_url}" target="_blank" class="text-blue-500 hover:underline">View File</a></div>` : ''}
+          `;
+
+          modalActions.innerHTML = '';
+          if (cert.status === 'pending') {
+            modalActions.innerHTML = `
+              <button onclick="updateStatus(${cert.id}, 'approved')" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Approve</button>
+              <button onclick="updateStatus(${cert.id}, 'declined')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Decline</button>
+              <button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
+            `;
+          } else if (cert.status === 'processing') {
+            modalActions.innerHTML = `
+              <button onclick="markReady(${cert.id})" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Mark as Ready for Pickup</button>
+              <button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
+            `;
+          } else {
+            modalActions.innerHTML = `<button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>`;
+          }
+
+          document.getElementById('certificateModal').classList.remove('hidden');
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while fetching certificate details.');
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('certificateModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('certificateModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
+
+  <script>feather.replace();</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-in { animation: slideIn 0.5s ease-out; }
+    .service-card { transition: all 0.3s ease; }
+    .service-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .activity-item { transition: all 0.3s ease; }
+    .activity-item:hover { background-color: #f3f4f6; transform: translateX(5px); }
+    .nav-item { transition: all 0.3s ease; }
+    .nav-item:hover { background-color: rgba(255,255,255,0.1); transform: translateX(5px); }
+    .nav-item.active { background-color: rgba(255,255,255,0.2); border-left: 4px solid white; }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-400 to-purple-500 text-white p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="bg-white rounded-full p-2">
+          <img src="/static/images/logo.png" alt="Barangay Logo" class="w-8 h-8 rounded-full object-cover">
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Barangay Portal</h1>
+          <p class="text-xs opacity-90">Silangan, Lazaan Nagcarlan Laguna</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button class="hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+        </button>
+        <button class="bg-white bg-opacity-20 p-2 rounded-full hover:bg-opacity-30 transition">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white h-screen shadow-lg">
+      <nav class="p-4 space-y-2">
+        <a href="{{ url_for('dashboard') }}" class="nav-item active flex items-center space-x-3 p-3 rounded-lg text-purple-600">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span class="font-medium">Dashboard</span>
+        </a>
+        <a href="{{ url_for('certificates') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+          </svg>
+          <span class="font-medium">Certificates</span>
+        </a>
+        <a href="{{ url_for('complaints') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+          </svg>
+          <span class="font-medium">Complaints/Blotter</span>
+        </a>
+        <a href="{{ url_for('settings') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-gray-600 hover:text-purple-600">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+          <span class="font-medium">Settings</span>
+        </a>
+      </nav>
+
+      <div class="p-4">
+        <a href="{{ url_for('logout') }}" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-red-600 hover:bg-red-50">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          <span class="font-medium">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Welcome Banner -->
+      <div class="bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-2xl p-8 mb-8 shadow-lg animate-slide-in">
+        <h2 class="text-3xl font-bold mb-2">Welcome to Barangay Pulse</h2>
+        <p class="opacity-90">Your digital gateway to efficient barangay services and stronger community connections in Sitangay Lozoan.</p>
+      </div>
+
+       <!-- Quick Services -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Quick Services</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Certificates -->
+                    <div class="service-card bg-white rounded-xl p-6 shadow-md cursor-pointer">
+                        <div class="bg-blue-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">Certificates</h4>
+                        <p class="text-sm text-gray-600">Request barangay clearance and certificates</p>
+                        <a href="#" class="text-blue-600 text-sm font-medium mt-3 inline-block hover:underline">Apply now →</a>
+                    </div>
+
+                    <!-- File Complaint -->
+                    <div class="service-card bg-white rounded-xl p-6 shadow-md cursor-pointer">
+                        <div class="bg-red-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">File Complaint</h4>
+                        <p class="text-sm text-gray-600">Report issues and concerns to barangay officials</p>
+                        <a href="#" class="text-red-600 text-sm font-medium mt-3 inline-block hover:underline">Submit →</a>
+                    </div>
+
+                    <!-- Community News -->
+                    <div class="service-card bg-white rounded-xl p-6 shadow-md cursor-pointer">
+                        <div class="bg-yellow-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l-5.5 9h11z"/>
+                                <circle cx="12" cy="17" r="1.5"/>
+                                <path d="M13 10h-2v6h2z"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">Community News</h4>
+                        <p class="text-sm text-gray-600">Stay updated with the latest announcements and events</p>
+                        <a href="#" class="text-yellow-600 text-sm font-medium mt-3 inline-block hover:underline">Read more →</a>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="service-card bg-white rounded-xl p-6 shadow-md cursor-pointer">
+                        <div class="bg-purple-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">Profile</h4>
+                        <p class="text-sm text-gray-600">Manage your personal information and documents</p>
+                        <a href="#" class="text-purple-600 text-sm font-medium mt-3 inline-block hover:underline">View profile →</a>
+                    </div>
+                </div>
+            </div>
+
+      <!-- Announcements Section -->
+     <!-- Announcements Section -->
+<div>
+  <h3 class="text-2xl font-bold mb-6 text-gray-800">Announcements</h3>
+
+  {% if announcements %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for ann in announcements %}
+    <div
+      class="announcement-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition"
+      data-title="{{ ann.title | e }}"
+      data-image="{{ ann.image_url | default('/static/images/default.jpg', true) | e }}"
+      data-description="{{ ann.description | e }}"
+      data-created="{{ ann.created_at | e }}"
+      data-posted-by="{{ ann.posted_by | default('Admin', true) | e }}"
+      onclick="openModal(this)"
+    >
+      <img 
+        src="{{ ann.image_url | default('/static/images/default.jpg', true) }}" 
+        class="h-40 w-full object-cover" 
+        alt="Announcement image"
+        onerror="this.src='/static/images/default.jpg';"
+      >
+      <div class="p-4">
+        <h4 class="font-bold text-gray-800 mb-1">
+          {{ ann.title }}
+          {% if ann.priority %}
+            {% if ann.priority == 'Urgent' %}
+              <span class="ml-2 px-2 py-1 text-xs bg-red-100 text-red-600 rounded-full">Urgent</span>
+            {% elif ann.priority == 'Important' %}
+              <span class="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-600 rounded-full">Important</span>
+            {% endif %}
+          {% endif %}
+        </h4>
+        <p class="text-sm text-gray-500 mb-2">Posted {{ ann.created_at }} by {{ ann.posted_by or 'Admin' }}</p>
+        <p class="text-gray-600 text-sm line-clamp-2">{{ ann.description }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-gray-500">No announcements available at the moment.</p>
+  {% endif %}
+</div>
+
+<!-- Modal Template -->
+<div id="announcementModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
+    <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✕</button>
+    <img id="modalImage" class="w-full h-64 object-cover rounded-lg mb-4" src="" alt="Announcement image">
+    <h3 id="modalTitle" class="text-2xl font-bold mb-2"></h3>
+    <p id="modalDate" class="text-sm text-gray-500 mb-4"></p>
+    <p id="modalDescription" class="text-gray-700"></p>
+  </div>
+</div>
+
+<script>
+function openModal(el) {
+  const title = el.getAttribute('data-title');
+  const image = el.getAttribute('data-image');
+  const description = el.getAttribute('data-description');
+  const created = el.getAttribute('data-created');
+  const postedBy = el.getAttribute('data-posted-by');
+
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('modalImage').src = image || '/static/images/default.jpg';
+  document.getElementById('modalDescription').innerText = description;
+  document.getElementById('modalDate').innerText = `Posted ${created} by ${postedBy || 'Admin'}`;
+
+  document.getElementById('announcementModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('announcementModal').classList.add('hidden');
+}
+</script>
+
+
+
+
+
+  <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-600 to-purple-500 text-white py-8 mt-12">
+  <div class="container mx-auto px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Logo + Barangay Info -->
+      <div class="flex items-start space-x-4">
+        <div class="flex items-center justify-center bg-white rounded-full w-14 h-14 shrink-0">
+          <img src="/static/images/logo.png" alt="Barangay Logo" class="w-10 h-10 rounded-full object-cover">
+        </div>
+        <div>
+          <h4 class="font-bold text-lg">Barangay Pulse</h4>
+          <p class="text-sm opacity-90">
+            This repository is a minimal and more developed community portal.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-bold mb-3">Quick Links</h4>
+        <ul class="space-y-2 text-sm opacity-90">
+          <li><a href="#" class="hover:underline">Services</a></li>
+          <li><a href="#" class="hover:underline">Certificates</a></li>
+          <li><a href="#" class="hover:underline">News</a></li>
+          <li><a href="#" class="hover:underline">Announcements</a></li>
+        </ul>
+      </div>
+
+      <!-- Office Hours -->
+      <div>
+        <h4 class="font-bold mb-3">Office Hours</h4>
+        <ul class="space-y-2 text-sm opacity-90">
+          <li>📍 Silangan Lazaan, Nagcarlan Laguna</li>
+          <li>⏰ Monday - Friday: 8:00 AM - 5:00 PM</li>
+          <li>⏰ Saturday: 8:00 AM - 1:00 PM</li>
+          <li>📧 brgy.silanganlazaan@yahoo.com.ph</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom small text -->
+    <div class="text-center text-sm opacity-70 mt-8 border-t border-white border-opacity-20 pt-4">
+      © 2025 Barangay Pulse. All rights reserved.
+    </div>
+  </div>
+</footer>
+</body>
+</html>

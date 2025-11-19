@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barangay Portal - Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/admindashboard.css" />
+  <!-- Heroicons CDN for white sidebar icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+      <!-- Active Dashboard -->
+      <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item active">
+  <i data-feather="layout" class="icon"></i>
+  <span>Dashboard</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+  <i data-feather="users" class="icon"></i>
+  <span>Resident Management</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Barangay Officials</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Certificates</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+  <i data-feather="alert-circle" class="icon"></i>
+  <span>Complaints/Blotter</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+  <i data-feather="volume-2" class="icon"></i>
+  <span>Announcements</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+  <i data-feather="settings" class="icon"></i>
+  <span>Settings</span>
+</a>
+
+<a href="{{ url_for('logout') }}" class="nav-item">
+  <i data-feather="log-out" class="icon"></i>
+  <span>Logout</span>
+</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <header class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl font-semibold">Dashboard</h1>
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="border border-gray-300 rounded-md px-3 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            id="searchInput"
+          />
+          <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <button type="button" onclick="openHistoryModal()" class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-colors">
+          <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <p class="text-gray-600 mb-6">Welcome back, <strong>{{ session.get('first_name', 'Admin') }}</strong></p>
+
+    <!-- DASHBOARD CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Resident Management -->
+      <div class="card hover-animate">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-semibold text-lg">Resident Management</h2>
+            <p class="text-gray-500 text-sm">Manage resident profiles, records, and information</p>
+          </div>
+          <div class="text-indigo-500 text-2xl">
+            <i data-feather="users"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-3xl font-bold">{{ residents_count }}</p>
+        <p class="text-gray-500 text-sm">Total Residents</p>
+      </div>
+
+      <!-- Barangay Officials -->
+      <div class="card hover-animate">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-semibold text-lg">Barangay Officials</h2>
+            <p class="text-gray-500 text-sm">View and manage barangay official profiles</p>
+          </div>
+          <div class="text-green-500 text-2xl">
+            <i data-feather="user-check"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-3xl font-bold">{{ officials_count }}</p>
+        <p class="text-gray-500 text-sm">Active Officials</p>
+      </div>
+
+      <!-- Certificates -->
+      <div class="card hover-animate">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-semibold text-lg">Certificates</h2>
+            <p class="text-gray-500 text-sm">Issue and track barangay certificates</p>
+          </div>
+          <div class="text-yellow-500 text-2xl">
+            <i data-feather="file-text"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-3xl font-bold">{{ certificates_count }}</p>
+        <p class="text-gray-500 text-sm">This Month</p>
+      </div>
+
+      <!-- Complaints -->
+      <div class="card hover-animate">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-semibold text-lg">Complaints</h2>
+            <p class="text-gray-500 text-sm">Handle resident complaints and issues</p>
+          </div>
+          <div class="text-red-500 text-2xl">
+            <i data-feather="alert-circle"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-3xl font-bold">{{ complaints_count }}</p>
+        <p class="text-gray-500 text-sm">Pending Review</p>
+      </div>
+
+      <!-- Announcements -->
+      <div class="card hover-animate">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-semibold text-lg">Announcements</h2>
+            <p class="text-gray-500 text-sm">Create and manage public announcements</p>
+          </div>
+          <div class="text-purple-500 text-2xl">
+            <i data-feather="volume-2"></i>
+          </div>
+        </div>
+        <p class="mt-4 text-3xl font-bold">{{ announcements_count }}</p>
+        <p class="text-gray-500 text-sm">Active Posts</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b">
+          <h2 class="text-2xl font-bold text-gray-800">Activity History</h2>
+          <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="space-y-6">
+            <!-- Captain Activities -->
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 mb-3">Captain Activities</h3>
+              <div id="captainActivities" class="space-y-3">
+                <!-- Activities will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Secretary Activities -->
+            <div>
+              <h3 class="text-lg font-semibold text-gray-700 mb-3">Secretary Activities</h3>
+              <div id="secretaryActivities" class="space-y-3">
+                <!-- Activities will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/admin_dashbaord.js"></script>
+  <script>
+    feather.replace(); // Initialize icons
+  </script>
+</body>
+</html>

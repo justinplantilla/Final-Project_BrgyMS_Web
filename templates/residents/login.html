@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Barangay Portal</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    <div class="login-page">
+        <div class="logo-side">
+            <div class="logo-container">
+                <img src="/static/images/logo.png" alt="Barangay Logo" class="main-logo">
+                <h1 class="logo-title">Barangay Pulse</h1>
+            </div>
+        </div>
+        
+        <div class="form-side">
+            <div class="form-container">
+                <div class="form-header">
+                    <div class="icon-circle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h2>Barangay Portal</h2>
+                    <p class="subtitle">Welcome back, resident!</p>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form action="{{ url_for('login') }}" method="POST">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-footer">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            <span>Remember Me</span>
+                        </label>
+                        <a href="{{ url_for('forgot_password') }}" class="forgot-password">Forgot?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Login</button>
+                    
+                    <div class="register-prompt">
+                        <a href="{{ url_for('register') }}">Create an account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

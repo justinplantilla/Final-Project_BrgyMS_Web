@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Resident - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/admin_addresident.css" />
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+      <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+        <i data-feather="layout" class="icon"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item active">
+        <i data-feather="users" class="icon"></i>
+        <span>Resident Management</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+        <i data-feather="user-check" class="icon"></i>
+        <span>Barangay Officials</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+        <i data-feather="file-text" class="icon"></i>
+        <span>Certificates</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+        <i data-feather="alert-circle" class="icon"></i>
+        <span>Complaints/Blotter</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+        <i data-feather="volume-2" class="icon"></i>
+        <span>Announcements</span>
+      </a>
+
+      <a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item">
+        <i data-feather="settings" class="icon"></i>
+        <span>Settings</span>
+      </a>
+
+      <a href="{{ url_for('logout') }}" class="nav-item">
+        <i data-feather="log-out" class="icon"></i>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-1">{{ "Edit Resident" if edit else "Add Resident" }}</h1>
+    <p class="text-gray-600 mb-6">{{ "Update resident information in the system" if edit else "Create a new resident profile in the system" }}</p>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-white 
+                        {% if category == 'success' %} bg-green-500 
+                        {% elif category == 'danger' %} bg-red-500 
+                        {% else %} bg-blue-500 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form Container -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <h2 class="text-lg font-semibold mb-1">Resident Information</h2>
+      <p class="text-sm text-gray-500 mb-5">Fill in the details below to add a new resident</p>
+
+      <form method="POST" action="{{ url_for('admin_bp.edit_resident', resident_id=resident.id) if edit else url_for('admin_bp.add_resident') }}" class="space-y-5">
+        <!-- Full Name -->
+        <div>
+          <label class="form-label">Full Name <span class="text-red-500">*</span></label>
+          <input type="text" name="name" value="{{ resident.name if edit else '' }}" placeholder="Enter full name" class="form-input" required>
+        </div>
+
+        <!-- ID and Age -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="form-label">Resident ID <span class="text-red-500">*</span></label>
+            <input type="text" name="resident_id" value="{{ resident.resident_id if edit else '' }}" placeholder="Enter resident ID" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Age <span class="text-red-500">*</span></label>
+            <input type="number" name="age" value="{{ resident.age if edit else '' }}" placeholder="Enter age" class="form-input" required>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="form-label">Address <span class="text-red-500">*</span></label>
+          <input type="text" name="address" value="{{ resident.address if edit else '' }}" placeholder="Enter complete address" class="form-input" required>
+        </div>
+
+        <!-- Purok and Contact -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="form-label">Purok <span class="text-red-500">*</span></label>
+            <select name="purok" class="form-input" required>
+              <option value="">Select Purok</option>
+              <option value="1" {{ 'selected' if edit and resident.purok == '1' else '' }}>Purok 1</option>
+              <option value="2" {{ 'selected' if edit and resident.purok == '2' else '' }}>Purok 2</option>
+              <option value="3" {{ 'selected' if edit and resident.purok == '3' else '' }}>Purok 3</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Contact Number <span class="text-red-500">*</span></label>
+            <input type="text" name="contact" value="{{ resident.contact if edit else '' }}" placeholder="Enter contact number" class="form-input" required>
+          </div>
+        </div>
+
+        <!-- Gender and Civil Status -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="form-label">Gender <span class="text-red-500">*</span></label>
+            <select name="gender" class="form-input" required>
+              <option value="">Select Gender</option>
+              <option value="Male" {{ 'selected' if edit and resident.gender == 'Male' else '' }}>Male</option>
+              <option value="Female" {{ 'selected' if edit and resident.gender == 'Female' else '' }}>Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Civil Status <span class="text-red-500">*</span></label>
+            <select name="civil_status" class="form-input" required>
+              <option value="">Select Civil Status</option>
+              <option value="Single" {{ 'selected' if edit and resident.civil_status == 'Single' else '' }}>Single</option>
+              <option value="Married" {{ 'selected' if edit and resident.civil_status == 'Married' else '' }}>Married</option>
+              <option value="Widowed" {{ 'selected' if edit and resident.civil_status == 'Widowed' else '' }}>Widowed</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Occupation -->
+        <div>
+          <label class="form-label">Occupation <span class="text-gray-400">(Optional)</span></label>
+          <input type="text" name="occupation" value="{{ resident.occupation if edit else '' }}" placeholder="Enter occupation" class="form-input">
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 pt-4">
+          <a href="{{ url_for('admin_bp.adminresidents') }}" 
+             class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+            ✕ Cancel
+          </a>
+          <button type="submit" 
+                  class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg flex items-center gap-2 transition">
+            <i data-feather="save" class="w-4 h-4"></i>
+            Save Resident
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>feather.replace();</script>
+</body>
+</html>

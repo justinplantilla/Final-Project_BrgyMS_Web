@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Barangay Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/admin_settings.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="flex bg-gray-50 h-screen">
+
+  <!-- SIDEBAR -->
+    <aside class="w-64 bg-gradient-to-b from-indigo-700 to-purple-600 text-white flex flex-col">
+    <div class="px-5 py-4 border-b border-white/20">
+      <h1 class="font-bold text-lg">Barangay Portal - Admin</h1>
+      <p class="text-xs font-light">Silangan, Lazaan, Nagcarlan Laguna</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1 text-sm">
+
+    <a href="{{ url_for('admin_bp.admindashboard') }}" class="nav-item">
+  <i data-feather="layout" class="icon"></i>
+  <span>Dashboard</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminresidents') }}" class="nav-item">
+  <i data-feather="users" class="icon"></i>
+  <span>Resident Management</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminofficials') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Barangay Officials</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincertificates') }}" class="nav-item">
+  <i data-feather="user-check" class="icon"></i>
+  <span>Certificates</span>
+</a>
+
+<a href="{{ url_for('admin_bp.admincomplaints') }}" class="nav-item">
+  <i data-feather="alert-circle" class="icon"></i>
+  <span>Complaints/Blotter</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminannouncement') }}" class="nav-item">
+  <i data-feather="volume-2" class="icon"></i>
+  <span>Announcements</span>
+</a>
+
+<a href="{{ url_for('admin_bp.adminsettings') }}" class="nav-item active">
+  <i data-feather="settings" class="icon"></i>
+  <span>Settings</span>
+</a>
+
+<a href="{{ url_for('logout') }}" class="nav-item">
+  <i data-feather="log-out" class="icon"></i>
+  <span>Logout</span>
+</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-semibold">Settings</h1>
+      <p class="text-sm text-gray-500">Manage your barangay information and system preferences</p>
+    </div>
+
+    <!-- Barangay Information Form -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 max-w-3xl">
+      <h2 class="text-lg font-semibold text-gray-800 mb-1">Barangay Information</h2>
+      <p class="text-sm text-gray-500 mb-6">Update your barangay details and contact information</p>
+
+      <form class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Barangay Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Barangay Name</label>
+            <div class="relative">
+              <input type="text" value="Barangay Silangan Lazaan"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Barangay Captain -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Barangay Captain</label>
+            <div class="relative">
+              <input type="text" value="Kgg. Benigno Condino"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <div class="relative">
+              <input type="text" value="Nagcarlan,Laguna, District 4"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Contact Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+            <div class="relative">
+              <input type="text" value="+63 912 345 6789"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <div class="relative">
+              <input type="email" value="silanganlazaan@barangay.gov.ph"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Municipality -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Municipality / City</label>
+            <div class="relative">
+              <input type="text" value="Nagcarlan"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Province -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Province</label>
+            <div class="relative">
+              <input type="text" value="Laguna"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+              <button type="button" class="absolute right-2 top-2.5 text-indigo-600"><i data-feather="edit-3" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-3 pt-6">
+          <button type="button"
+                  class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-md transition">
+            Cancel
+          </button>
+          <button type="submit"
+                  class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-md transition">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>feather.replace();</script>
+</body>
+</html>
