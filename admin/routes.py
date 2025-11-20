@@ -74,9 +74,27 @@ def add_resident():
             civil_status = request.form.get('civil_status')
             occupation = request.form.get('occupation')
 
+            # Parse full name into first_name, last_name, middle_initial
+            name_parts = name.strip().split()
+            if len(name_parts) == 2:
+                first_name = name_parts[0]
+                last_name = name_parts[1]
+                middle_initial = None
+            elif len(name_parts) >= 3:
+                first_name = name_parts[0]
+                last_name = name_parts[-1]
+                middle_initial = ' '.join(name_parts[1:-1])
+            else:
+                first_name = name
+                last_name = ''
+                middle_initial = None
+
             # Create new resident using SQLAlchemy
             new_resident = Resident(
                 resident_id=resident_id,
+                first_name=first_name,
+                last_name=last_name,
+                middle_initial=middle_initial,
                 name=name,
                 age=int(age),
                 purok=purok,
@@ -124,6 +142,21 @@ def edit_resident(resident_id):
             civil_status = request.form.get('civil_status')
             occupation = request.form.get('occupation')
 
+            # Parse full name into first_name, last_name, middle_initial
+            name_parts = name.strip().split()
+            if len(name_parts) == 2:
+                first_name = name_parts[0]
+                last_name = name_parts[1]
+                middle_initial = None
+            elif len(name_parts) >= 3:
+                first_name = name_parts[0]
+                last_name = name_parts[-1]
+                middle_initial = ' '.join(name_parts[1:-1])
+            else:
+                first_name = name
+                last_name = ''
+                middle_initial = None
+
             # Get existing resident
             existing_resident = Resident.query.get(resident_id)
             if not existing_resident:
@@ -132,6 +165,9 @@ def edit_resident(resident_id):
 
             # Update resident data
             existing_resident.resident_id = resident_id_form
+            existing_resident.first_name = first_name
+            existing_resident.last_name = last_name
+            existing_resident.middle_initial = middle_initial
             existing_resident.name = name
             existing_resident.age = int(age)
             existing_resident.purok = purok
@@ -365,7 +401,7 @@ def allowed_file(filename):
 @admin_required
 def adminofficials():
     try:
-        officials = BarangayOfficial.query.order_by(BarangayOfficial.created_at.desc()).all()
+        officials = BarangayOfficial.query.options(joinedload(BarangayOfficial.resident)).order_by(BarangayOfficial.created_at.desc()).all()
     except Exception as e:
         print("Error fetching officials:", e)
         officials = []
@@ -376,12 +412,28 @@ def adminofficials():
 @admin_required
 def add_official():
     if request.method == 'POST':
-        full_name = request.form.get('full_name')
+        resident_id = request.form.get('resident_id')
         position = request.form.get('position')
         contact_number = request.form.get('contact_number')
         term_start = request.form.get('term_start')
         term_end = request.form.get('term_end')
         photo = request.files.get('photo')
+
+        # Validate resident_id
+        try:
+            resident = Resident.query.get(int(resident_id))
+            if not resident:
+                flash("Selected resident not found.", "danger")
+                return redirect(url_for("admin_bp.add_official"))
+        except ValueError:
+            flash("Invalid resident selected.", "danger")
+            return redirect(url_for("admin_bp.add_official"))
+
+        # Check if resident is already an official
+        existing_official = BarangayOfficial.query.filter_by(resident_id=resident_id).first()
+        if existing_official:
+            flash("This resident is already a barangay official.", "danger")
+            return redirect(url_for("admin_bp.add_official"))
 
         photo_url = None
 
@@ -394,7 +446,7 @@ def add_official():
 
         try:
             new_official = BarangayOfficial(
-                full_name=full_name,
+                resident_id=resident_id,
                 position=position,
                 contact_number=contact_number,
                 term_start=datetime.strptime(term_start, '%Y-%m-%d').date() if term_start else None,
@@ -409,12 +461,12 @@ def add_official():
             activity_log = ActivityLog(
                 admin_id=session['user_id'],
                 action="Added official",
-                details=f"Added official {full_name} (Position: {position})"
+                details=f"Added official {resident.name} (Position: {position})"
             )
             db.session.add(activity_log)
             db.session.commit()
 
-            flash(f"Official {full_name} added successfully!", "success")
+            flash(f"Official {resident.name} added successfully!", "success")
             return redirect(url_for("admin_bp.adminofficials"))
 
         except Exception as e:
@@ -422,18 +474,35 @@ def add_official():
             flash(f"Error adding official: {str(e)}", "danger")
             print("Add official error:", e)
 
-    return render_template("add_editofficial.html")
+    # GET request: fetch residents for dropdown
+    try:
+        residents = Resident.query.order_by(Resident.name).all()
+    except Exception as e:
+        print("Error fetching residents:", e)
+        residents = []
+
+    return render_template("add_editofficial.html", residents=residents)
 
 @admin_bp.route('/edit_official/<int:official_id>', methods=['GET', 'POST'])
 @admin_required
 def edit_official(official_id):
     if request.method == 'POST':
-        full_name = request.form.get('full_name')
+        resident_id = request.form.get('resident_id')
         position = request.form.get('position')
         contact_number = request.form.get('contact_number')
         term_start = request.form.get('term_start')
         term_end = request.form.get('term_end')
         photo = request.files.get('photo')
+
+        # Validate resident_id
+        try:
+            resident = Resident.query.get(int(resident_id))
+            if not resident:
+                flash("Selected resident not found.", "danger")
+                return redirect(url_for("admin_bp.edit_official", official_id=official_id))
+        except ValueError:
+            flash("Invalid resident selected.", "danger")
+            return redirect(url_for("admin_bp.edit_official", official_id=official_id))
 
         # Get existing official data
         try:
@@ -445,6 +514,12 @@ def edit_official(official_id):
             flash(f"Error fetching official: {str(e)}", "danger")
             return redirect(url_for("admin_bp.adminofficials"))
 
+        # Check if another resident is already an official (excluding current official)
+        existing_official_check = BarangayOfficial.query.filter_by(resident_id=resident_id).filter(BarangayOfficial.id != official_id).first()
+        if existing_official_check:
+            flash("This resident is already a barangay official.", "danger")
+            return redirect(url_for("admin_bp.edit_official", official_id=official_id))
+
         photo_url = existing_official.photo_url
 
         # Handle photo upload (replace if new photo uploaded)
@@ -455,7 +530,7 @@ def edit_official(official_id):
             photo_url = f"/static/uploads/officials/{filename}"  # public URL for template use
 
         try:
-            existing_official.full_name = full_name
+            existing_official.resident_id = resident_id
             existing_official.position = position
             existing_official.contact_number = contact_number
             existing_official.term_start = datetime.strptime(term_start, '%Y-%m-%d').date() if term_start else None
@@ -468,12 +543,12 @@ def edit_official(official_id):
             activity_log = ActivityLog(
                 admin_id=session['user_id'],
                 action="Updated official",
-                details=f"Updated official {full_name} (Position: {position})"
+                details=f"Updated official {resident.name} (Position: {position})"
             )
             db.session.add(activity_log)
             db.session.commit()
 
-            flash(f"Official {full_name} updated successfully!", "success")
+            flash(f"Official {resident.name} updated successfully!", "success")
             return redirect(url_for("admin_bp.adminofficials"))
 
         except Exception as e:
@@ -491,7 +566,14 @@ def edit_official(official_id):
         flash(f"Error fetching official: {str(e)}", "danger")
         return redirect(url_for("admin_bp.adminofficials"))
 
-    return render_template("add_editofficial.html", official=official, edit=True)
+    # GET request: fetch residents for dropdown
+    try:
+        residents = Resident.query.order_by(Resident.name).all()
+    except Exception as e:
+        print("Error fetching residents:", e)
+        residents = []
+
+    return render_template("add_editofficial.html", official=official, residents=residents, edit=True)
 
 @admin_bp.route('/delete_official/<int:official_id>', methods=['POST'])
 @admin_required

@@ -1,3 +1,3 @@
-- [x] Add link to forgot_password.css in login.html head
-- [x] Change forgot password link to onclick in login.html
-- [x] Add modal CSS to forgot_password.css to hide modal by default
+- [x] Modify add_resident route to parse full name into first_name, last_name, middle_initial
+- [x] Modify edit_resident route to parse full name into first_name, last_name, middle_initial
+- [ ] Test adding a single resident to ensure no IntegrityError

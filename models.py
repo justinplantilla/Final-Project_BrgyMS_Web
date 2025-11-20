@@ -88,7 +88,7 @@ class BarangayOfficial(db.Model):
     __tablename__ = 'barangay_officials'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    full_name = db.Column(db.String(100), nullable=False)
+    resident_id = db.Column(db.Integer, db.ForeignKey('residents.id'), nullable=False)
     position = db.Column(db.String(100), nullable=False)
     contact_number = db.Column(db.String(20))
     term_start = db.Column(db.Date)
@@ -96,6 +96,9 @@ class BarangayOfficial(db.Model):
     photo_url = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship to Resident
+    resident = db.relationship('Resident', backref='barangay_officials', lazy=True)
 
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'

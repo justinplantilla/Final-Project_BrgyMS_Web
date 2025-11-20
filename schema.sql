@@ -90,14 +90,15 @@ CREATE TABLE IF NOT EXISTS residents (
 -- Create barangay_officials table
 CREATE TABLE IF NOT EXISTS barangay_officials (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
+    resident_id INT NOT NULL,
     position VARCHAR(100) NOT NULL,
     contact_number VARCHAR(20),
     term_start DATE,
     term_end DATE,
     photo_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (resident_id) REFERENCES residents(id) ON DELETE CASCADE
 );
 
 -- Create activity_logs table
