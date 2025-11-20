@@ -556,10 +556,104 @@ def settings():
 
     return render_template('residents/settings.html', user=user_data)
 
+@app.route('/send-reset-code', methods=['POST'])
+def send_reset_code():
+    """Send reset code via AJAX for forgot password"""
+    try:
+        data = request.json
+        email = data.get('email')
+
+        if not email:
+            return jsonify({'success': False, 'message': 'Email is required'}), 400
+
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'success': False, 'message': 'No account found with this email address'}), 404
+
+        # Generate reset code
+        reset_code = randint(100000, 999999)
+        session['reset_code'] = reset_code
+        session['reset_email'] = email
+
+        # Send email
+        email_sent = send_email(
+            to=email,
+            subject='Barangay Pulse – Password Reset Code',
+            body=(
+                "Magandang araw!\n\n"
+                "Nakakuha kami ng kahilingan para sa pag-reset ng iyong password sa *Barangay Pulse*.\n\n"
+                "Upang magpatuloy, mangyaring gamitin ang reset code na nasa ibaba:\n\n"
+                f"Reset Code: {reset_code}\n\n"
+                "Kung hindi ikaw ang nagsimula ng prosesong ito, maaari mong balewalain ang mensaheng ito.\n\n"
+                "Lubos na gumagalang,\n"
+                "Barangay Pulse Support Team"
+            ),
+            html=(
+                "<div style='font-family: Arial, sans-serif; color: #333;'>"
+                "<h2 style='color: #007b5e;'>Barangay Pulse – Password Reset</h2>"
+                "<p>Magandang araw!</p>"
+                "<p>Nakakuha kami ng kahilingan para sa pag-reset ng iyong password sa <strong>Barangay Pulse</strong>.</p>"
+                "<p>Upang magpatuloy, mangyaring gamitin ang reset code na nasa ibaba:</p>"
+                f"<p style='font-size: 22px; font-weight: bold; color: #007b5e;'>{reset_code}</p>"
+                "<p>Kung hindi ikaw ang nagsimula ng prosesong ito, maaari mong balewalain ang mensaheng ito.</p>"
+                "<br>"
+                "<p>Lubos na gumagalang,<br><strong>Barangay Pulse Dev</strong></p>"
+                "</div>"
+            )
+        )
+
+        if email_sent:
+            return jsonify({'success': True, 'message': 'Reset code sent successfully. Check your email.'})
+        else:
+            return jsonify({'success': False, 'message': 'Failed to send reset code. Please try again.'}), 500
+
+    except Exception as e:
+        print(f"Error sending reset code: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal server error'}), 500
+
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    """Reset password using code"""
+    try:
+        data = request.json
+        code = data.get('code')
+        new_password = data.get('new_password')
+
+        if not code or not new_password:
+            return jsonify({'success': False, 'message': 'Code and new password are required'}), 400
+
+        # Verify code
+        stored_code = session.get('reset_code')
+        stored_email = session.get('reset_email')
+
+        if not stored_code or not stored_email or str(code) != str(stored_code):
+            return jsonify({'success': False, 'message': 'Invalid or expired reset code'}), 400
+
+        # Get user
+        user = User.query.filter_by(email=stored_email).first()
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
+        # Update password
+        user.password = generate_password_hash(new_password)
+        db.session.commit()
+
+        # Clear session
+        session.pop('reset_code', None)
+        session.pop('reset_email', None)
+
+        return jsonify({'success': True, 'message': 'Password reset successfully! You can now log in with your new password.'})
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error resetting password: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal server error'}), 500
+
 @app.route('/forgot-password')
 def forgot_password():
-    """Forgot password page"""
-    return render_template('forgot_password.html')
+    """Forgot password page (legacy, can be removed if not needed)"""
+    return render_template('residents/forgot_password.html')
 
 # ============================================================================
 # API ENDPOINTS FOR ADMIN

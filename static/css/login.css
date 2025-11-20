@@ -207,6 +207,28 @@ body {
     transform: translateY(-2px);
 }
 
+/* FLASH MESSAGES */
+.alert {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.alert-error {
+    background-color: #f44336; /* Red for errors */
+}
+
+.alert-success {
+    background-color: #4caf50; /* Green for success */
+}
+
+.alert-info {
+    background-color: #2196f3; /* Blue for info/logout messages */
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .login-page {

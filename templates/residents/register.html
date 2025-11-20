@@ -6,6 +6,7 @@
     <title>Register - Barangay Portal</title>
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="stylesheet" href="/static/css/registration.css">
+    <script src="/static/js/login_register.js"></script>
 
 </head>
 <body>
@@ -83,8 +84,8 @@
 
                     <div class="form-footer" style="margin-bottom: 1rem;">
                         <label class="remember-me">
-                            <input type="checkbox" required>
-                            <span>I accept the Terms & Conditions</span>
+                            <input type="checkbox" id="termsCheckbox" required>
+                            <span>I accept the <a href="#" onclick="openTermsModal(); return false;" style="color: #5B8DEF; text-decoration: underline;">Terms & Conditions</a></span>
                         </label>
                     </div>
 
@@ -98,12 +99,83 @@
         </div>
     </div>
 
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Terms and Conditions</h3>
+            </div>
+            <div class="modal-body">
+                <h4>Terms and Conditions for Barangay Pulse</h4>
+                <p>Welcome to Barangay Pulse! By registering and using our services, you agree to the following terms and conditions. Please read them carefully.</p>
 
+                <h5>1. User Eligibility</h5>
+                <p>You must be a resident of the barangay and provide accurate, truthful information during registration. Only one account per resident is allowed.</p>
+
+                <h5>2. Account Security</h5>
+                <p>Your account is personal and confidential. You are responsible for maintaining the security of your password and login credentials. Sharing your account with others is strictly prohibited.</p>
+
+                <h5>3. Acceptable Use</h5>
+                <p>You agree to use the system responsibly and in accordance with applicable laws. Any misuse, including but not limited to:</p>
+                <ul>
+                    <li>Submitting false or misleading information</li>
+                    <li>Attempting to gain unauthorized access</li>
+                    <li>Harassing other users or officials</li>
+                    <li>Posting inappropriate content</li>
+                </ul>
+                <p>may result in immediate account suspension or termination.</p>
+
+                <h5>4. Data Privacy</h5>
+                <p>We are committed to protecting your personal information. Your data will be used solely for barangay services and will not be shared with third parties without your consent, except as required by law.</p>
+
+                <h5>5. Service Availability</h5>
+                <p>While we strive to provide continuous service, we do not guarantee uninterrupted access. The barangay reserves the right to modify or discontinue services at any time.</p>
+
+                <h5>6. Changes to Terms</h5>
+                <p>These terms may be updated periodically. Continued use of the service constitutes acceptance of any changes.</p>
+
+                <p><strong>By clicking "I Agree", you acknowledge that you have read, understood, and agree to be bound by these terms and conditions.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-agree" onclick="agreeToTerms()">I Agree</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let emailVerified = false;
 
+        // Modal functions
+        function openTermsModal() {
+            document.getElementById('termsModal').style.display = 'flex';
+        }
 
+        function closeTermsModal(uncheck = true) {
+            document.getElementById('termsModal').style.display = 'none';
+            // Uncheck the checkbox when modal is closed without agreeing
+            if (uncheck) {
+                const termsCheckbox = document.getElementById('termsCheckbox');
+                if (termsCheckbox) {
+                    termsCheckbox.checked = false;
+                }
+            }
+        }
+
+        function agreeToTerms() {
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            if (termsCheckbox) {
+                termsCheckbox.checked = true;
+            }
+            closeTermsModal(false);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('termsModal');
+            if (event.target === modal) {
+                closeTermsModal();
+            }
+        }
 
         // Password validation
         document.getElementById('registerForm').addEventListener('submit', function(e) {

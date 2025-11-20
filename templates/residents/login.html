@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Barangay Portal</title>
     <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/forgot_password.css">
 </head>
 <body>
     <div class="login-page">
@@ -27,16 +28,15 @@
                     <h2>Barangay Portal</h2>
                     <p class="subtitle">Welcome back, resident!</p>
                 </div>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                
+
                 <form action="{{ url_for('login') }}" method="POST">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category or 'info' }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     <div class="input-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -52,7 +52,7 @@
                             <input type="checkbox" name="remember">
                             <span>Remember Me</span>
                         </label>
-                        <a href="{{ url_for('forgot_password') }}" class="forgot-password">Forgot?</a>
+                        <a href="#" onclick="openForgotPasswordModal()" class="forgot-password">Forgot?</a>
                     </div>
                     
                     <button type="submit" class="btn-submit">Login</button>
@@ -64,5 +64,48 @@
             </div>
         </div>
     </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeForgotPasswordModal()">&times;</span>
+            <h2>Reset Password</h2>
+            <p>Enter your email address to receive a reset code.</p>
+
+            <!-- Step 1: Enter Email -->
+            <div id="emailStep">
+                <form id="emailForm">
+                    <div class="input-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Send Reset Code</button>
+                </form>
+            </div>
+
+            <!-- Step 2: Enter Code and New Password -->
+            <div id="codeStep" style="display: none;">
+                <form id="resetForm">
+                    <div class="input-group">
+                        <label for="resetCode">Verification Code</label>
+                        <input type="text" id="resetCode" name="code" placeholder="Enter 6-digit code" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="new_password" placeholder="Enter new password" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm new password" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Reset Password</button>
+                </form>
+            </div>
+
+            <div id="modalMessage" class="alert" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/login_register.js"></script>
 </body>
 </html>
