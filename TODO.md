@@ -1,3 +1,3 @@
-- [x] Modify add_resident route to parse full name into first_name, last_name, middle_initial
-- [x] Modify edit_resident route to parse full name into first_name, last_name, middle_initial
-- [ ] Test adding a single resident to ensure no IntegrityError
+- [x] Make body a flex column with min-h-screen
+- [x] Change the sidebar+main flex div to flex-1 (taking remaining space)
+- [x] Change the sidebar from h-screen to h-full

@@ -209,6 +209,10 @@
   {% endif %}
 </div>
 
+    </main>
+
+  </div>
+
 <!-- Modal Template -->
 <div id="announcementModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
@@ -216,36 +220,9 @@
     <img id="modalImage" class="w-full h-64 object-cover rounded-lg mb-4" src="" alt="Announcement image">
     <h3 id="modalTitle" class="text-2xl font-bold mb-2"></h3>
     <p id="modalDate" class="text-sm text-gray-500 mb-4"></p>
-    <p id="modalDescription" class="text-gray-700"></p>
-  </div>
+    <p id="modalDescription" class="text-gray-700"></p></div>
 </div>
-
-<script>
-function openModal(el) {
-  const title = el.getAttribute('data-title');
-  const image = el.getAttribute('data-image');
-  const description = el.getAttribute('data-description');
-  const created = el.getAttribute('data-created');
-  const postedBy = el.getAttribute('data-posted-by');
-
-  document.getElementById('modalTitle').innerText = title;
-  document.getElementById('modalImage').src = image || '/static/images/default.jpg';
-  document.getElementById('modalDescription').innerText = description;
-  document.getElementById('modalDate').innerText = `Posted ${created} by ${postedBy || 'Admin'}`;
-
-  document.getElementById('announcementModal').classList.remove('hidden');
-}
-
-function closeModal() {
-  document.getElementById('announcementModal').classList.add('hidden');
-}
-</script>
-
-
-
-
-
-  <!-- Footer -->
+<!-- Footer -->
     <footer class="bg-gradient-to-r from-purple-600 to-purple-500 text-white py-8 mt-12">
   <div class="container mx-auto px-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -293,5 +270,27 @@ function closeModal() {
     </div>
   </div>
 </footer>
+
+<script>
+function openModal(el) {
+  const title = el.getAttribute('data-title');
+  const image = el.getAttribute('data-image');
+  const description = el.getAttribute('data-description');
+  const created = el.getAttribute('data-created');
+  const postedBy = el.getAttribute('data-posted-by');
+
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('modalImage').src = image || '/static/images/default.jpg';
+  document.getElementById('modalDescription').innerText = description;
+  document.getElementById('modalDate').innerText = `Posted ${created} by ${postedBy || 'Admin'}`;
+
+  document.getElementById('announcementModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('announcementModal').classList.add('hidden');
+}
+</script>
+
 </body>
 </html>
