@@ -139,13 +139,13 @@
                             <p class="text-gray-600">{{ user.email }}</p>
                             <div class="flex space-x-8 mt-4">
                                 <div class="text-center">
-                                    <p class="text-2xl font-bold text-purple-600">12</p>
-                                    <p class="text-sm text-gray-500">Total Requests</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-2xl font-bold text-purple-600">8</p>
-                                    <p class="text-sm text-gray-500">Approved</p>
-                                </div>
+                                <p class="text-2xl font-bold text-purple-600">{{ total_requests_count }}</p>
+                                <p class="text-sm text-gray-500">Total Requests</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-purple-600">{{ total_complaints_count }}</p>
+                                <p class="text-sm text-gray-500">Complaints</p>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -334,7 +334,53 @@
                             <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Under Review</span>
                         </div>
                     </div>
-                    <a href="#" class="text-blue-500 text-sm font-medium mt-4 inline-block hover:underline">View All Requests</a>
+                    <a href="#" id="viewAllRequestsBtn" class="text-blue-500 text-sm font-medium mt-4 inline-block hover:underline cursor-pointer">View All Requests</a>
+                </div>
+
+                <!-- Modal for All Requests and Complaints -->
+                <div id="allRequestsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">All Requests and Complaints</h3>
+                            <button id="closeModalBtn" class="text-gray-600 hover:text-gray-900">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Certificate Requests</h4>
+                            {% if certificate_requests %}
+                                <ul class="divide-y divide-gray-200">
+                                    {% for req in certificate_requests %}
+                                        <li class="py-2">
+                                            <p class="font-medium">{{ req.certificate_type }}</p>
+                                            <p class="text-sm text-gray-500">Submitted on {{ req.formatted_date }}</p>
+                                            <p class="text-sm">Status: <span class="font-semibold">{{ req.status|capitalize }}</span></p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No certificate requests found.</p>
+                            {% endif %}
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2">Complaints</h4>
+                            {% if complaints %}
+                                <ul class="divide-y divide-gray-200">
+                                    {% for comp in complaints %}
+                                        <li class="py-2">
+                                            <p class="font-medium">{{ comp.incident_type }}</p>
+                                            <p class="text-sm text-gray-500">Submitted on {{ comp.formatted_date }}</p>
+                                            <p class="text-sm">Status: <span class="font-semibold">{{ comp.status|capitalize }}</span></p>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No complaints found.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Account Actions -->
@@ -401,6 +447,30 @@
                 button.textContent = 'Edit Contact';
             }
         }
+    </script>
+
+    <script>
+        // Modal toggle functions
+        const viewAllRequestsBtn = document.getElementById('viewAllRequestsBtn');
+        const allRequestsModal = document.getElementById('allRequestsModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        viewAllRequestsBtn.addEventListener('click', () => {
+            allRequestsModal.classList.remove('hidden');
+            allRequestsModal.classList.add('flex');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            allRequestsModal.classList.add('hidden');
+            allRequestsModal.classList.remove('flex');
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === allRequestsModal) {
+                allRequestsModal.classList.add('hidden');
+                allRequestsModal.classList.remove('flex');
+            }
+        });
     </script>
 
      <!-- Footer -->

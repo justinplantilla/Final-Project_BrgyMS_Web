@@ -554,7 +554,44 @@ def settings():
         user_data = {}
         print(f"Error fetching user data: {str(e)}")
 
-    return render_template('residents/settings.html', user=user_data)
+    # Fetch total requests count
+    try:
+        total_requests_count = CertificateRequest.query.filter_by(user_id=session['user_id']).count()
+    except Exception as e:
+        print(f"Error fetching total requests count: {str(e)}")
+        total_requests_count = 0
+
+    # Fetch total complaints count
+    try:
+        total_complaints_count = Complaint.query.filter_by(user_id=session['user_id']).count()
+    except Exception as e:
+        print(f"Error fetching total complaints count: {str(e)}")
+        total_complaints_count = 0
+
+    # Fetch all certificate requests for the user
+    try:
+        certificate_requests = CertificateRequest.query.filter_by(user_id=session['user_id']).order_by(CertificateRequest.created_at.desc()).all()
+        for req in certificate_requests:
+            req.formatted_date = req.created_at.strftime('%B %d, %Y')
+    except Exception as e:
+        certificate_requests = []
+        print(f"Error fetching certificate requests: {str(e)}")
+
+    # Fetch all complaints for the user
+    try:
+        complaints = Complaint.query.filter_by(user_id=session['user_id']).order_by(Complaint.created_at.desc()).all()
+        for comp in complaints:
+            comp.formatted_date = comp.created_at.strftime('%B %d, %Y')
+    except Exception as e:
+        complaints = []
+        print(f"Error fetching complaints: {str(e)}")
+
+    return render_template('residents/settings.html',
+                           user=user_data,
+                           total_requests_count=total_requests_count,
+                           total_complaints_count=total_complaints_count,
+                           certificate_requests=certificate_requests,
+                           complaints=complaints)
 
 @app.route('/send-reset-code', methods=['POST'])
 def send_reset_code():
